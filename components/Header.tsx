@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { GlobalContext } from "../libs/client/GlobalContext";
 import { cls } from "../libs/utils";
 
 interface HeaderProps {
@@ -8,6 +9,16 @@ interface HeaderProps {
 }
 
 export default function Header(props: HeaderProps) {
+  const { darkMode, setDarkMode } = useContext(GlobalContext);
+  function toggleDark() {
+    setDarkMode(!darkMode);
+    if (!darkMode) {
+      document.querySelector("body")?.classList.add("dark");
+    } else {
+      document.querySelector("body")?.classList.remove("dark");
+    }
+  }
+  /*
   const [dark, setDark] = useState(false);
   function toggleDark() {
     setDark(!dark);
@@ -17,6 +28,7 @@ export default function Header(props: HeaderProps) {
       document.querySelector("body")?.classList.remove("dark");
     }
   }
+  */
 
   return (
     <header className="h-[100px] flex justify-center items-center border-b shadow dark:border-slate-500 w-full select-none">

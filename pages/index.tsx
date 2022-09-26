@@ -4,9 +4,16 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { Device } from "@prisma/client";
 import DeviceCard from "../components/DeviceCard";
+import Toggle from "react-toggle";
+import PuffLoader from "react-spinners/PuffLoader";
 
 const Home: NextPage = () => {
   const [devices, setDevices] = useState<Device[]>([]);
+  const [realTime, setRealTime] = useState(false);
+
+  useEffect(() => {
+    console.log(`실시간 모드 ${realTime}`);
+  }, [realTime]);
 
   useEffect(() => {
     fetch("/api/device")
@@ -47,13 +54,37 @@ const Home: NextPage = () => {
             </a>
           </Link>
         </div>
-        <div>
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl">Linked to you</h2>
+          <label className="flex items-center space-x-2 select-none">
+            <Toggle
+              defaultChecked={realTime}
+              icons={false}
+              onChange={(e) => setRealTime(e.target.checked)}
+            />
+            <span className="flex items-center space-x-2">
+              <span>실시간</span>
+              <span>
+                {realTime ? (
+                  <PuffLoader
+                    size={25}
+                    color={
+                      document.body.className.includes("dark")
+                        ? "#00FF00"
+                        : "#0000FF"
+                    }
+                  />
+                ) : (
+                  "OFF"
+                )}
+              </span>
+            </span>
+          </label>
         </div>
         <div className="flex flex-wrap justify-start">
           {0 < devices.length
             ? devices.map((device) => (
-                <DeviceCard key={device.id} {...device} />
+                <DeviceCard key={device.id} {...device} realTime={realTime} />
               ))
             : "디바이스를 등록 해주세요"}
         </div>
