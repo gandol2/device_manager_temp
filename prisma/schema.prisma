@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum DeviceType {
+  TEMP // 온도센서
+  HUMI // 습도센서
+  CO2 // CO2센서
+}
+
+model Device {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId // 고유ID
+  type      DeviceType // 장치종류
+  location  String     @default("거실") // 장치 위치
+  unit      String? // 장치 단위
+  memo      String? // 장치 메모
+  state     Boolean    @default(false) // 장치 상태
+  measures  Measures[] // 측정값
+  createdAt DateTime   @default(now()) // 생성일자
+  updatedAt DateTime   @updatedAt // 수정일자
+}
+
+model Measures {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId // 고유ID
+  value     String // 측정 값
+  Device    Device   @relation(fields: [deviceId], references: [id]) // 장치
+  deviceId  String   @db.ObjectId // 장치ID
+  createdAt DateTime @default(now()) // 생성일자
+  updatedAt DateTime @updatedAt // 수정일자
+}
